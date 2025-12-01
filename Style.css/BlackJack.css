@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url('../Images/vista-del-crupier-trabajando-en-un-casino.jpg');
+    background-size: cover;
+    background-position: center;
+    color:white; 
+}
+
+header {
+    font-size: 100px;;
+    display: flex;  
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.player-area, .dealer-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#start-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+#start-button{
+    padding: 10px 20px;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+
+#game-container{
+    display: none;
+}
+
+#player-total{
+
+}
+
+#dealer-total{
+
+}
+
+#results-screen{
+    display: none;
+}
+
