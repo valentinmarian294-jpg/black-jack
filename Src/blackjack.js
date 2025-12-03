@@ -1,19 +1,23 @@
-const startButton = document.getElementById("start-button");
 const startGame = document.getElementById("start-screen");
 const gameContainer = document.getElementById("game-container");
+const startButton = document.getElementById("start-button");
+const hitButton = document.getElementById("hit-button");
+const standButton = document.getElementById("stand-button");
+const restartButton = document.getElementById("restart-button");
 const gameResult = document.getElementById("results-screen");
 const playerResult = document.getElementById("score");
 const computerResult = document.getElementById("scorePc");
-const restartButton = document.getElementById("restart-button");
-const restartButtonScore = document.getElementById("restart-button-score");
-const hitButton = document.getElementById("hit-button");
-const standButton = document.getElementById("stand-button");
 const playerTotalSpan = document.getElementById("player-total");
 const dealerTotalSpan = document.getElementById("dealer-total");
+const playerCardContainer = document.getElementById("player-card")
+const dealerCardContainer = document.getElementById("dealer-card");
 
 const suits = ["clubs", "diamonds", "hearts", "spades"];
 let playerTotal = 0;
 let dealerTotal = 0;
+
+let playerAces = 0;
+let dealerAces = 0;
 
 let playerScore = 0;  
 let computerScore = 0;
@@ -29,9 +33,9 @@ const values = [
   { key: "8", points: 8 },
   { key: "9", points: 9 },
   { key: "10", points: 10 },
-  { key: "jack", points: 12 },
-  { key: "queen", points: 13 },
-  { key: "king", points: 14 },
+  { key: "jack", points: 10 },
+  { key: "queen", points: 10 },
+  { key: "king", points: 10 },
   { key: "ace", points: 11 }
 ];
 
@@ -46,24 +50,96 @@ function createDeck() {
         value: card.key,
         points: card.points,
         suit: suit,
-        img: `../Images/${card.key}_of_${suit}.svg`
+        img: `../images/${card.key}_of_${suit}.svg`
       });
     });
   });
 
-  deck.sort(() => Math.random() - 0.5); 
+  shuffleDeck();
 }
 
-startButton.addEventListener("click", () => {
-  createDeck();
-  startGame.style.display = "none";
-  gameContainer.style.display = "flex";
-});
-
+function shuffleDeck() {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+}
 
 function takeCard() {
   return deck.pop();
 }
+function giveCardToPlayer(){
+  const card = takeCard();
+    playerTotal += card.points
+
+  const img = document.createElement("img");
+    img.src = card.img;
+    img.alt = `${card.value} of ${card.suit}`;
+    img.classList.add("card");
+    playerCardContainer.appendChild(img)
+    if (card.value === "ace") {
+    playerAces++;
+    }while (playerTotal > 21 && playerAces){
+    playerTotal -=10;
+    playerAces--
+  }
+  playerTotalSpan.innerHTML = playerTotal;
+}
+function giveCardToDealer(){
+  const card = takeCard();
+    dealerTotal += card.points
+
+  const img = document.createElement("img");
+    img.src = card.img;
+    img.alt = `${card.value} of ${card.suit}`;
+    img.classList.add("card");
+    dealerCardContainer.appendChild(img)
+
+    if (card.value === "ace") {
+    dealerAces++;
+    }while (dealerTotal > 21 && dealerAces){
+    dealerTotal -=10;
+    dealerAces--
+  }
+  dealerTotalSpan.innerHTML = dealerTotal;
+}
+
+startButton.addEventListener("click", () => {
+  createDeck();
+  giveCardToPlayer();
+  giveCardToPlayer();
+  
+  giveCardToDealer()
+  giveCardToDealer();
+  startGame.style.display = "none";
+  gameContainer.style.display = "flex";
+});
+
+hitButton.addEventListener("click", () => {
+  giveCardToPlayer();
+  if (playerTotal > 21) {
+    hitButton.disabled = true;
+    standButton.disabled = true;
+    endRound("lose");
+  }
+});
+
+standButton.addEventListener("click", () => {
+  hitButton.disabled = true;
+  standButton.disabled = true;
+  while (dealerTotal < 17) {
+      giveCardToDealer(); 
+  }
+  if (dealerTotal > 21 || dealerTotal < playerTotal) {
+    endRound("win");
+  } else if (dealerTotal === playerTotal) {
+    endRound("draw");
+  } else {
+    endRound("lose");
+  }
+
+});
+
 function endRound(result) {
   gameContainer.style.display = "none";
   gameResult.style.display = "flex";
@@ -83,63 +159,21 @@ function endRound(result) {
   computerResult.innerHTML = computerScore;
   document.getElementById("game-message").innerHTML = message;
 }
-hitButton.addEventListener("click", () => {
-  const card = takeCard();
-  playerTotal += card.points;
-  playerTotalSpan.innerHTML = playerTotal;
-
-  const img = document.createElement("img");
-  img.src = card.img;
-  img.alt = `${card.value} of ${card.suit}`;
-  img.classList.add("card");
-  document.getElementById("player-card").appendChild(img);
-
-  if (playerTotal > 21) {
-    hitButton.disabled = true;
-    standButton.disabled = true;
-    endRound("lose");
-  }
-});
-
-standButton.addEventListener("click", () => {
-  hitButton.disabled = true;
-  standButton.disabled = true;
-  while (dealerTotal < 17) {
-    const card = takeCard();
-    dealerTotal += card.points;
-    dealerTotalSpan.innerHTML = dealerTotal;
-  const img = document.createElement("img");
-    img.src = card.img;
-    img.alt = `${card.value} of ${card.suit}`;
-    img.classList.add("card");
-    document.getElementById("dealer-card").appendChild(img);
-
-  if (dealerTotal > 21 || dealerTotal < playerTotal) {
-    endRound("win");
-  } else if (dealerTotal === playerTotal) {
-    endRound("draw");
-  } else {
-    endRound("lose");
-  }
-}
-});
 
 restartButton.addEventListener("click", () => {
-  startGame.style.display = "flex";
-  gameContainer.style.display = "none";
-  gameResult.style.display = "none";
-
   playerTotal = 0;
   dealerTotal = 0;
-  playerTotalSpan.textContent = playerTotal;
-  dealerTotalSpan.textContent = dealerTotal;
+  startGame.style.display = "flex";
+  gameResult.style.display = "none";
+  playerTotalSpan.innerHTML = playerTotal;
+  dealerTotalSpan.innerHTML = dealerTotal;
 
-    document.getElementById("player-card").innerHTML = "";
-  document.getElementById("dealer-card").innerHTML = "";
+  playerCardContainer.innerHTML = ""
+  dealerCardContainer.innerHTML = ""
 
   hitButton.disabled = false;
   standButton.disabled = false;
 
-  document.getElementById("game-message").textContent = "";
+  document.getElementById("game-message").innerHTML = "";
 });
 
