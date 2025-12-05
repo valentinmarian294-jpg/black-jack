@@ -12,7 +12,7 @@ const dealerTotalSpan = document.getElementById("dealer-total");
 const playerCardContainer = document.getElementById("player-card");
 const dealerCardContainer = document.getElementById("dealer-card");
 
-const dealerHidenCard = "../images/ver-carta-oculta.png";
+const dealerHidenCard = "images/ver-carta-oculta.png";
 
 const suits = ["clubs", "diamonds", "hearts", "spades"];
 
@@ -56,7 +56,7 @@ function createDeck() {
         value: card.key,
         points: card.points,
         suit: suit,
-        img: `../images/${card.key}_of_${suit}.svg`
+        img: `images/${card.key}_of_${suit}.svg`
       });
     });
   });
